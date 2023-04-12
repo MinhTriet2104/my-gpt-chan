@@ -6,6 +6,8 @@ type Props = {
 
 function Message({ message }: Props) {
 	const isChatGPT = message.user.name === "ChatGPT";
+	// const messageText = message.text.replace(/\n/g, "<br>");
+	const messageText = message.text;
 
 	return (
 		<div className={`py-5 text-white ${isChatGPT && "bg-[#434654]"}`}>
@@ -15,7 +17,7 @@ function Message({ message }: Props) {
 					alt=""
 					className="h-8 w-8 rounded-full"
 				/>
-				<p className="pt-1 text-sm">{message.text}</p>
+				<p className="pt-1 text-md"><pre>{messageText}</pre></p>
 			</div>
 		</div>
 	);

@@ -5,6 +5,8 @@ const serviceAccount = JSON.parse(
 	process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
 );
 
+serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/gm, "\n")
+
 if (!getApps().length) {
 	admin.initializeApp({
 		credential: admin.credential.cert(serviceAccount),

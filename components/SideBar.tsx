@@ -49,14 +49,13 @@ function SideBar() {
 				<div className="flex justify-between items-center cursor-pointer text-gray-300 transition-all duration-200 ease-out rounded-lg px-2">
 					<div className="flex items-center space-x-3">
 						<img
-							onClick={() => signOut()}
 							src={session.user?.image!}
 							alt="Profile picture"
 							className="h-10 2xl:h-12 w-10 2xl:w-12 rounded-full cursor-pointer mx-auto mb-2 hover:opacity-50"
 						/>
 						<p className="truncate">{session.user?.name}</p>
 					</div>
-					<ArrowLeftOnRectangleIcon className="h-7 w-7" />
+					<ArrowLeftOnRectangleIcon className="h-7 w-7" onClick={() => signOut()} />
 				</div>
 			)}
 		</div>
