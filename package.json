@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",
+    "@types/showdown": "^2.0.0",
     "firebase": "^9.17.2",
     "firebase-admin": "^11.5.0",
     "next": "latest",
@@ -17,9 +18,11 @@
     "react-firebase-hooks": "^5.1.1",
     "react-hot-toast": "^2.4.0",
     "react-select": "^5.7.0",
+    "showdown": "^2.1.0",
     "swr": "^2.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@types/node": "18.11.3",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",

@@ -1,7 +1,7 @@
 export default function Head() {
 	return (
 		<>
-			<title>ChatGPT Clone</title>
+			<title>GPT-chan</title>
 			<meta
 				content="width=device-width, initial-scale=1"
 				name="viewport"

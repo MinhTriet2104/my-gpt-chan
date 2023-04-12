@@ -52,7 +52,7 @@ function ChatInput({ chatId }: Props) {
 			message
 		);
 		// Toast notification
-		const notification = toast.loading("ChatGPT is thinking...");
+		const notification = toast.loading("GPT-chan is thinking...");
 
 		await fetch("/api/askQuestion", {
 			method: "POST",
@@ -75,8 +75,7 @@ function ChatInput({ chatId }: Props) {
 
 	return (
 		<div
-			className="bg-slate-800 text-gray-400 
-		rounded-md text-sm focus:outline-none">
+			className="bg-slate-800 text-gray-400 text-sm focus:outline-none">
 			<form onSubmit={sendMessage} className="p-5 space-x-5 flex">
 				<input
 					className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300"
