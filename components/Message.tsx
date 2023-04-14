@@ -19,7 +19,7 @@ function Message({ message }: Props) {
 					className="h-8 w-8 rounded-full"
 				/>
 				{/* <article className="prose lg:prose-md prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} /> */}
-				<article className="prose lg:prose-md prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} />
+				<article className="prose lg:prose-md prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} />
 			</div>
 		</div>
 	);
