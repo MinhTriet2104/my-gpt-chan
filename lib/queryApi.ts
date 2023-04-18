@@ -10,6 +10,7 @@ const query = async (prompt: string, previousRequestMessages: ChatCompletionRequ
 			...previousRequestMessages,
 			{"role": "user", "content": prompt}
 		];
+		console.log(messages);
 		const res = await openai
 		.createChatCompletion({
 			model,
