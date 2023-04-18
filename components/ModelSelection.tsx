@@ -15,15 +15,18 @@ function ModelSelection() {
 			<Select
 				className="mt-2"
 				options={models?.modelOptions}
-				defaultValue={model}
-				placeholder={model}
+				defaultValue={{
+					value: "gpt-3.5-turbo",
+					label: "GPT-chan"
+				}}
+				placeholder="Please select model here..."
 				isSearchable
 				isLoading={isLoading}
 				menuPosition="fixed"
 				classNames={{
 					control: (state) => "bg-slate-800  border-[#434654]",
 				}}
-				onChange={(e) => setModel(e.value)}
+				onChange={(e) => setModel(e?.value)}
 			/>
 		</div>
 	);

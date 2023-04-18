@@ -28,12 +28,12 @@ export default async function handler(
 	const response = await query(prompt, chatId, model);
 
 	const message: Message = {
-		text: response || "ChatGPT was unable to find an answer for that!",
+		text: response || "GPT-chan was unable to find an answer for that!",
 		createdAt: admin.firestore.Timestamp.now(),
 		user: {
-			_id: 'ChatGPT',
-			name: 'ChatGPT',
-			avatar: "https://links.papareact.com/89k",
+			_id: 'GPT-chan',
+			name: 'GPT-chan',
+			avatar: "https://i.pinimg.com/1200x/06/19/c7/0619c75193b55bec40a1b6161ed1672b.jpg",
 		},
 	};
 

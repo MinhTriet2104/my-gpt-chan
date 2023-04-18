@@ -6,7 +6,7 @@ type Props = {
 };
 
 function Message({ message }: Props) {
-	const isChatGPT = message.user.name === "ChatGPT";
+	const isChatGPT = message.user.name === "GPT-chan" || message.user.name === "ChatGPT";
 	// const messageText = message.text.replace(/\n/g, "<br>");
 	const messageText = markdownToHtml(message.text);
 
@@ -16,7 +16,7 @@ function Message({ message }: Props) {
 				<img
 					src={message.user.avatar}
 					alt=""
-					className="h-8 w-8 rounded-full"
+					className="h-9 w-9 rounded-full"
 				/>
 				{/* <article className="prose lg:prose-md prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} /> */}
 				<article className="prose lg:prose-md prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} />

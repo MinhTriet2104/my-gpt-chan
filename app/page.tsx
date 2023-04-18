@@ -10,7 +10,7 @@ function Homepage() {
 		<div className="flex flex-col items-center justify-center h-screen text-white">
 			<div className="mb-20">
 				<h1 className=" justify-center text-5xl font-bold mb-4 ">
-					ChatGPT
+					GPT-chan
 				</h1>
 				<p className=" text-4xl text-center">OpenAI</p>
 			</div>

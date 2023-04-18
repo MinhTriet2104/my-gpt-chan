@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Model } from 'openai';
 import openai from "../../lib/chatgpt";
 import Option from "react-select/dist/declarations/src/components/Option";
 

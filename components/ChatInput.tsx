@@ -67,7 +67,7 @@ function ChatInput({ chatId }: Props) {
 			}),
 		}).then(() => {
 			// Toast notification to say successful...
-			toast.success("ChatGPT has responded!", {
+			toast.success("GPT-chan has responded!", {
 				id: notification,
 			});
 		});
