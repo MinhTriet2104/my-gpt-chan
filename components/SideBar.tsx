@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
 import ChatRow from "./ChatRow";
-import ModelSelection from "./ModelSelection";
+// import ModelSelection from "./ModelSelection";
 import NewChat from "./NewChat";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 

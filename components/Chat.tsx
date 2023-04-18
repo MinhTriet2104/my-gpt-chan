@@ -5,10 +5,9 @@ import {
   collection,
   orderBy,
   query,
-  QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { forwardRef, LegacyRef, useState, useEffect, useRef, RefObject } from "react";
+import { forwardRef, LegacyRef, useEffect, useRef, RefObject } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
 import Message from "./Message";
