@@ -22,8 +22,7 @@ export const config = {
 // }
 
 export default async function handler(
-	req: NextRequest,
-	event: NextFetchEvent
+	req: NextRequest
 ) {
 	const { prompt, chatId, model, session, previousRequestMessages } = await req.json();
 

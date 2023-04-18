@@ -34,23 +34,7 @@ const query = async (prompt: string, previousRequestMessages: ChatCompletionRequ
 			return `ChatPGT was unable to find an answer for that! (Error : ${error.message})`
 		}
 
-		// return res;
 	} else {
-		// const res = await openai
-		// 	.createCompletion({
-		// 		model,
-		// 		prompt:promptWithMarkdown,
-		// 		temperature: 0.9,
-		// 		top_p: 1,
-		// 		max_tokens: 1000,
-		// 		frequency_penalty: 0,
-		// 		presence_penalty: 0,
-		// 	})
-		// 	.then((res) => res.data.choices[0].text)
-		// 	.catch(
-		// 		(err) =>
-		// 			`ChatPGT was unable to find an answer for that! (Error : ${err.message})`
-		// 	);
 
 		try {
 			const completion = await openai
