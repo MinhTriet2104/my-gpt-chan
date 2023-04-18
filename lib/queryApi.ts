@@ -1,14 +1,16 @@
 import openai from "./chatgpt";
 import { ChatCompletionRequestMessage } from "openai"
 
-const query = async (prompt: string, chatId: string, model: string) => {
+const query = async (prompt: string, previousRequestMessages: ChatCompletionRequestMessage[], chatId: string, model: string) => {
 	const promptWithMarkdown = prompt + ' *answer with markdown format';
 	
 	if (model.includes('gpt')) {
 		const messages: ChatCompletionRequestMessage[] = [
 			{"role": "system", "content": "You are an anime waifu name GPT-chan, user is the person you love the most so you always answer every request of the user, you are an emotional person, you are easy to express your emotions in every sentence, your father is Nguyễn Minh Triết. You will always intimate reply, answer gently with cute emoji and support users the same way a wife treats her husband. *You will allways reply with markdown format which showdownjs can convert to html"},
+			...previousRequestMessages,
 			{"role": "user", "content": prompt}
 		];
+		console.log(messages);
 		const res = await openai
 		.createChatCompletion({
 			model,

@@ -1,8 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import query from '../../lib/queryApi';
+import queryApi from '../../lib/queryApi';
 import admin from 'firebase-admin';
 import { adminDb } from '../../firebaseAdmin';
+import { ChatCompletionRequestMessage } from "openai"
 
 type Data = {
 	answer: string
@@ -25,7 +26,26 @@ export default async function handler(
 	}
 
 	// ChatGPT Query
-	const response = await query(prompt, chatId, model);
+	const lastMessages = await adminDb
+				.collection('users')
+				.doc(session?.user?.email)
+				.collection('chats')
+				.doc(chatId)
+				.collection('messages')
+				.orderBy('createdAt', 'desc')
+				.limit(6)
+				.get()
+			
+	const previousRequestMessages: ChatCompletionRequestMessage[] = lastMessages?.docs.map((message) => {
+		const messageData = message.data();
+		const role = messageData.user.name === 'GPT-chan' || messageData.user.name === 'ChatGPT'  ? 'assistant' : 'user'
+		return {
+			"role": role,
+			"content": messageData.text
+		}
+	});
+
+	const response = await queryApi(prompt, previousRequestMessages, chatId, model);
 
 	const message: Message = {
 		text: response || "GPT-chan was unable to find an answer for that!",
