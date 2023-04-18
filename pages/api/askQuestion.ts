@@ -38,10 +38,10 @@ export default async function handler(
 			
 	const previousRequestMessages: ChatCompletionRequestMessage[] = lastMessages?.docs.map((message) => {
 		const messageData = message.data();
-		const role = messageData.user.name === 'GPT-chan' || messageData.user.name === 'ChatGPT'  ? 'assistant' : 'user'
+		const role = messageData.user.name === 'GPT-chan' || messageData.user.name === 'ChatGPT' ? 'assistant' : 'user';
 		return {
 			"role": role,
-			"content": messageData.text
+			"content": '' + messageData.text.trim().replace(/\n|\r/g, "")
 		}
 	});
 
