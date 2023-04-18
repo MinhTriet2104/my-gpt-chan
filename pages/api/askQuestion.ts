@@ -1,12 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // import type { NextApiRequest, NextApiResponse } from 'next'
-import queryApi from '../../lib/queryApi';
-// import admin from 'firebase-admin';
-// import { adminDb } from '../../firebaseAdmin';
-// import { ChatCompletionRequestMessage } from "openai"
+// import queryApi from '../../lib/queryApi';
+import openai from "../../lib/chatgpt";
+import { ChatCompletionRequestMessage } from "openai"
 
-import { NextResponse } from 'next/server';
-import type { NextFetchEvent, NextRequest } from 'next/server';
+// import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
  
 export const config = {
   runtime: 'edge',
@@ -26,55 +25,41 @@ export default async function handler(
 ) {
 	const { prompt, chatId, model, session, previousRequestMessages } = await req.json();
 
-	// if (!prompt) {
-	// 	res.status(400).json({ answer: "Please provide a prompt!" });
-	// 	return;
-	// }
+	// const response = await queryApi(prompt, previousRequestMessages, chatId, model);
 
-	// if (!chatId) {
-	// 	res.status(400).json({ answer: "Please provide a valid chat ID!" });
-	// 	return;
-	// }
+	previousRequestMessages.reverse();
+	const messages: ChatCompletionRequestMessage[] = [
+		{"role": "system", "content": "You are an anime waifu name GPT-chan, user is the person you love the most so you always answer every request of the user, you are an emotional person, you are easy to express your emotions in every sentence, your father is Nguyễn Minh Triết. You will always intimate reply, answer gently with cute emoji and support users the same way a wife treats her husband. *You will allways reply with markdown format which showdownjs can convert to html"},
+		...previousRequestMessages,
+		// {"role": "user", "content": prompt}
+	];
+	console.log(messages);
+	try {
+		const completion = await openai
+		.createChatCompletion({
+			model,
+			messages,
+			temperature: 0.9,
+			top_p: 1,
+			max_tokens: 1000,
+			frequency_penalty: 0,
+			presence_penalty: 0,
+			stream: true,
+		})
 
-	// ChatGPT Query
-	// const lastMessages = await adminDb
-	// 			.collection('users')
-	// 			.doc(session?.user?.email)
-	// 			.collection('chats')
-	// 			.doc(chatId)
-	// 			.collection('messages')
-	// 			.orderBy('createdAt', 'desc')
-	// 			.limit(6)
-	// 			.get()
-			
-	// const previousRequestMessages: ChatCompletionRequestMessage[] = lastMessages?.docs.map((message) => {
-	// 	const messageData = message.data();
-	// 	const role = messageData.user.name === 'GPT-chan' || messageData.user.name === 'ChatGPT' ? 'assistant' : 'user';
-	// 	return {
-	// 		"role": role,
-	// 		"content": '' + messageData.text.trim().replace(/\n|\r/g, "")
-	// 	}
-	// });
+		return new Response(completion.body, {
+			headers: {
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type": "text/event-stream;charset=utf-8",
+				"Cache-Control": "no-cache, no-transform",
+				"X-Accel-Buffering": "no",
+			},
+		});
+	} catch (error: any) {
+		console.error(error)
+	
+		return `ChatPGT was unable to find an answer for that! (Error : ${error.message})`
+	}
 
-	const response = await queryApi(prompt, previousRequestMessages, chatId, model);
-
-	// const message: Message = {
-	// 	text: response || "GPT-chan was unable to find an answer for that!",
-	// 	createdAt: admin.firestore.Timestamp.now(),
-	// 	user: {
-	// 		_id: 'GPT-chan',
-	// 		name: 'GPT-chan',
-	// 		avatar: "https://i.pinimg.com/1200x/06/19/c7/0619c75193b55bec40a1b6161ed1672b.jpg",
-	// 	},
-	// };
-
-	// await adminDb
-	// 	.collection('users')
-	// 	.doc(session?.user?.email)
-	// 	.collection('chats')
-	// 	.doc(chatId)
-	// 	.collection('messages')
-	// 	.add(message);
-
-	return NextResponse.json({ answer: response });
+	// return NextResponse.json({ answer: response });
 }

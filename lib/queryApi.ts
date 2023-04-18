@@ -22,7 +22,7 @@ const query = async (prompt: string, previousRequestMessages: ChatCompletionRequ
 				max_tokens: 1000,
 				frequency_penalty: 0,
 				presence_penalty: 0,
-				// stream: true,
+				stream: true,
 			})
 
 			const data = await completion.json();

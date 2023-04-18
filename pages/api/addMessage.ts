@@ -6,10 +6,10 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-    const { data, session, chatId } = req.body;
+    const { answer, session, chatId } = req.body;
 
     const messageObj: Message = {
-    	text: data.answer || "GPT-chan was unable to find an answer for that!",
+    	text: answer || "GPT-chan was unable to find an answer for that!",
     	createdAt: admin.firestore.Timestamp.now(),
     	user: {
     		_id: 'GPT-chan',
