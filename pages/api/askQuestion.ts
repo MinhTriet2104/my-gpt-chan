@@ -5,10 +5,6 @@ import queryApi from '../../lib/queryApi';
 // import { adminDb } from '../../firebaseAdmin';
 // import { ChatCompletionRequestMessage } from "openai"
 
-type Data = {
-	answer: string
-}
-
 import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
  

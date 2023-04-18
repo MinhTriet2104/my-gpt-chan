@@ -9,8 +9,6 @@ import { db } from "../firebase";
 import ModelSelection from "./ModelSelection";
 import useSWR from "swr";
 import { ChatCompletionRequestMessage } from "openai"
-import admin from 'firebase-admin';
-import { adminDb } from '../firebaseAdmin';
 
 type Props = {
 	chatId: string;
@@ -93,26 +91,21 @@ function ChatInput({ chatId }: Props) {
 				session,
 				previousRequestMessages
 			}),
-		}).then((res) => {
-			console.log(res);
+		}).then(async res => {
+			const data = await res.json();
 
-			// const message: Message = {
-			// 	text: answer || "GPT-chan was unable to find an answer for that!",
-			// 	createdAt: admin.firestore.Timestamp.now(),
-			// 	user: {
-			// 		_id: 'GPT-chan',
-			// 		name: 'GPT-chan',
-			// 		avatar: "https://i.pinimg.com/1200x/06/19/c7/0619c75193b55bec40a1b6161ed1672b.jpg",
-			// 	},
-			// };
+			await fetch("/api/addMessage", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					data: data,
+					chatId,
+					session
+				}),
+			})
 
-			// await adminDb
-			// 	.collection('users')
-			// 	.doc(session?.user?.email)
-			// 	.collection('chats')
-			// 	.doc(chatId)
-			// 	.collection('messages')
-			// 	.add(message);
 			// Toast notification to say successful...
 			toast.success("GPT-chan has responded!", {
 				id: notification,
