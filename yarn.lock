@@ -2219,6 +2219,11 @@ once@^1.3.0, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+openai-edge@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/openai-edge/-/openai-edge-0.5.1.tgz"
+  integrity sha512-/Q/b9wkPKWIzcnsp2o0Of5QW/t4A0XLw+E7rjVSYR3gLVt+pWpFuWCgWPWUVS1UrrLJPvzmndwe1JMpfqLRJIQ==
+
 openai@^3.2.1:
   version "3.2.1"
   resolved "https://registry.npmjs.org/openai/-/openai-3.2.1.tgz"
