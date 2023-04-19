@@ -15,7 +15,7 @@ function Login() {
 			<button
 				onClick={() => signIn("google")}
 				className="text-white font-bold text-3xl animate-pulse">
-				Sign In to use GPT-chan
+				-{">"} Click here to use GPT-chan {"<"}-
 			</button>
 		</div>
 	);
