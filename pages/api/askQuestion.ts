@@ -36,6 +36,7 @@ export default async function handler(
 		...previousRequestMessages,
 		// {"role": "user", "content": prompt}
 	];
+	console.log(session.user.name);
 	console.log(messages);
 	try {
 		const completion = await openai
