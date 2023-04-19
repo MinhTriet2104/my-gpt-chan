@@ -18,17 +18,18 @@ type Props = {
   chatId: string;
   isStreaming: Boolean;
   answerNode: RefObject<HTMLTextAreaElement>;
-  messageStream: String;
+  htmlRenderNode: RefObject<HTMLParagraphElement>
+  // messageStream: String;
 };
 
-const MessageGptChan = forwardRef(
+const MessageGptChan = (
   (
-    { message, hidden }: { message: String; hidden?: Boolean },
-    ref?: LegacyRef<HTMLTextAreaElement>
+    { message, hidden, refText, refHtml }: { message: String; hidden?: Boolean, refText?: LegacyRef<HTMLTextAreaElement>, refHtml?: LegacyRef<HTMLParagraphElement>},
+    // ref?: LegacyRef<HTMLTextAreaElement>, refHtml?: LegacyRef<HTMLParagraphElement>
   ) => {
     const isChatGPT = true;
     // const messageText = message.text.replace(/\n/g, "<br>");
-    const messageText = markdownToHtml("" + message);
+    // const messageText = markdownToHtml("" + message);
 
     return (
       <div
@@ -44,17 +45,18 @@ const MessageGptChan = forwardRef(
           />
           {/* <article className="prose lg:prose-md prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} /> */}
           <article
-            className={ref && !hidden ? `prose lg:prose-md prose-invert` : ""}
-            dangerouslySetInnerHTML={{ __html: messageText }}
+            ref={refHtml}
+            className={refHtml && !hidden ? `prose lg:prose-md prose-invert` : ""}
+            // dangerouslySetInnerHTML={{ __html: messageText }}
           />
-          <textarea ref={ref} className="hidden"></textarea>
+          <textarea ref={refText} className="hidden"></textarea>
         </div>
       </div>
     );
   }
 );
 
-function Chat({ chatId, isStreaming, answerNode, messageStream }: Props) {
+function Chat({ chatId, isStreaming, answerNode, htmlRenderNode }: Props) {
   const { data: session } = useSession();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +85,7 @@ function Chat({ chatId, isStreaming, answerNode, messageStream }: Props) {
   }, [messages?.docs.length]);
 
   return (
-    <div className="flex-1 overflow-y-auto overflow-x-hidden">
+    <div id="messagesWrapper" className="flex-1 overflow-y-auto overflow-x-hidden">
       {messages?.empty && (
         <>
           <p className="=mt-10 text-center text-white">
@@ -95,7 +97,7 @@ function Chat({ chatId, isStreaming, answerNode, messageStream }: Props) {
       {messages?.docs.map((message) => (
         <Message key={message.id} message={message.data()} />
       ))}
-      <MessageGptChan message={messageStream} ref={answerNode} hidden={!isStreaming} />
+      <MessageGptChan message="" refText={answerNode} refHtml={htmlRenderNode} hidden={!isStreaming} />
       <div ref={messagesEndRef} />
     </div>
   );

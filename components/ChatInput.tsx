@@ -32,8 +32,9 @@ type Props = {
   chatId: string;
   setStreaming: Dispatch<SetStateAction<boolean>>;
   answerNode: RefObject<HTMLTextAreaElement>;
+  htmlRenderNode: RefObject<HTMLParagraphElement>;
   // messageStream: String;
-  setMessageStream: Dispatch<SetStateAction<string>>;
+  // setMessageStream: Dispatch<SetStateAction<string>>;
 };
 
 class RetriableError extends Error {}
@@ -46,9 +47,9 @@ const HEADERS_STREAM = {
   "X-Accel-Buffering": "no",
 };
 
-function ChatInput({ chatId, setStreaming, answerNode, setMessageStream }: Props) {
+function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) {
   const [prompt, setPrompt] = useState<string>("");
-  const [isConvertMarkdown, setIsConvertMarkdown] = useState<boolean>(false);
+  // const [isConvertMarkdown, setIsConvertMarkdown] = useState<boolean>(false);
   const { data: session } = useSession();
 
   const { data: model } = useSWR("model", {
@@ -56,20 +57,21 @@ function ChatInput({ chatId, setStreaming, answerNode, setMessageStream }: Props
   });
 
   function onData(data: string) {
-    if (!answerNode.current) {
+    if (!answerNode.current || !htmlRenderNode.current) {
       return;
     }
     try {
       let text = JSON.parse(data).choices[0].delta.content;
       if (text) {
         answerNode.current.value = answerNode.current.value + text;
-        if (!isConvertMarkdown) {
-          setIsConvertMarkdown(true);
-          setTimeout(() => {
-            setMessageStream(markdownToHtml(answerNode?.current?.value || ""));
-            if (isConvertMarkdown) setIsConvertMarkdown(false);
-          }, 200);
-        }
+        htmlRenderNode.current.innerHTML = markdownToHtml(answerNode.current.value);
+        // if (!isConvertMarkdown) {
+        //   setIsConvertMarkdown(true);
+        //   setTimeout(() => {
+        //     setMessageStream(markdownToHtml(answerNode?.current?.value || ""));
+        //     if (isConvertMarkdown) setIsConvertMarkdown(false);
+        //   }, 200);
+        // }
       }
     } catch (err) {
       console.log(`Failed to parse data: ${data}`);
@@ -85,9 +87,10 @@ function ChatInput({ chatId, setStreaming, answerNode, setMessageStream }: Props
     if (!prompt) return;
 
     setStreaming(true);
-    if (answerNode.current) {
+    if (answerNode.current && htmlRenderNode.current) {
       answerNode.current.value = "";
-      setMessageStream("");
+      htmlRenderNode.current.innerHTML= "";
+      // setMessageStream("");
     }
 
     const input = prompt.trim();
@@ -197,9 +200,10 @@ function ChatInput({ chatId, setStreaming, answerNode, setMessageStream }: Props
       signal: ctrl.signal,
       async onopen(response) {
         // answerValue.current = ""
-        if (answerNode.current) {
+        if (answerNode.current && htmlRenderNode.current) {
           answerNode.current.value = "";
-          setMessageStream("");
+          htmlRenderNode.current.innerHTML= "";
+          // setMessageStream("");
         }
         console.log("onopen");
         if (
@@ -261,48 +265,67 @@ function ChatInput({ chatId, setStreaming, answerNode, setMessageStream }: Props
           // throw err
         } else {
           console.log("onerror other", err);
+          setStreaming(false);
           // do nothing to automatically retry. You can also
           // return a specific retry interval here.
         }
       },
     });
-
-    useEffect(() => {
-      if (typeof ResizeObserver === "undefined") {
-        return () => {};
-      }
-
-      const observer = new ResizeObserver((entries) => {
-        // TODO: debounce scroll?
-        window.scroll({
-          top: document.body.scrollHeight,
-          behavior: "smooth",
-        });
-      });
-
-      if (answerNode.current) {
-        observer.observe(answerNode.current);
-      }
-
-      return () => {
-        if (answerNode.current) {
-          observer.unobserve(answerNode.current);
-        }
-      };
-    }, [answerNode.current]);
   };
+
+  useEffect(() => {
+    if (typeof ResizeObserver === "undefined") {
+      return () => {};
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      // TODO: debounce scroll?
+      window.scroll({
+        top: document.getElementById("messagesWrapper")?.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    if (htmlRenderNode.current) {
+      // observer.observe(answerNode.current);
+      observer.observe(htmlRenderNode.current);
+    }
+
+    return () => {
+      if (htmlRenderNode.current) {
+        // observer.unobserve(answerNode.current);
+        observer.unobserve(htmlRenderNode.current);
+      }
+    };
+  }, [htmlRenderNode.current]);
 
   return (
     <div className="bg-slate-800 text-gray-400 text-sm focus:outline-none">
       <form onSubmit={sendMessage} className="p-5 space-x-5 flex">
-        <input
-          className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300"
+        <textarea
+          className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300 max-h-52 w-full resize-none overflow-y-auto"
           disabled={!session}
           value={prompt}
+          tabIndex={0}
+          rows={1}
           onChange={(e) => setPrompt(e.target.value)}
-          type="text"
+          // type="text"
           placeholder="Type your message here..."
-        />
+          onKeyUp={(e) => {
+            const textarea = e.target as HTMLTextAreaElement
+            if (e.key === "Enter" && !e.shiftKey) {
+              const isEmpty = textarea.value.trim() === ""
+              if (isEmpty) {
+                textarea.value = ""
+              } else {
+                
+              }
+            } else {
+              textarea.style.height = "auto" // Reset the height to its default to allow it to shrink when deleting text
+              textarea.style.height = `${textarea.scrollHeight}px` // Set the height to the scroll height so that it expands on new lines
+            }
+          }}
+        ></textarea>
 
         <button
           disabled={!prompt || !session}
