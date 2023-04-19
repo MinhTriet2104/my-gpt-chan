@@ -26,17 +26,22 @@ import useSWR from "swr";
 import { ChatCompletionRequestMessage } from "openai";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { markdownToHtml } from "./ShowdownWrapper";
-import { setTimeout } from "timers";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 type Props = {
   chatId: string;
+  isStreaming: boolean;
   setStreaming: Dispatch<SetStateAction<boolean>>;
   answerNode: RefObject<HTMLTextAreaElement>;
   htmlRenderNode: RefObject<HTMLParagraphElement>;
+  messagesEndRef: RefObject<HTMLDivElement>;
   // messageStream: String;
   // setMessageStream: Dispatch<SetStateAction<string>>;
 };
 
+interface FormData {
+  prompt: string;
+}
 class RetriableError extends Error {}
 class FatalError extends Error {}
 
@@ -47,14 +52,32 @@ const HEADERS_STREAM = {
   "X-Accel-Buffering": "no",
 };
 
-function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) {
-  const [prompt, setPrompt] = useState<string>("");
+function ChatInput({
+  chatId,
+  isStreaming,
+  setStreaming,
+  answerNode,
+  htmlRenderNode,
+  messagesEndRef
+}: Props) {
+  // const [prompt, setPrompt] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    setFocus,
+  } = useForm<FormData>();
   // const [isConvertMarkdown, setIsConvertMarkdown] = useState<boolean>(false);
   const { data: session } = useSession();
 
   const { data: model } = useSWR("model", {
     fallbackData: "gpt-3.5-turbo",
   });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   function onData(data: string) {
     if (!answerNode.current || !htmlRenderNode.current) {
@@ -64,7 +87,10 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
       let text = JSON.parse(data).choices[0].delta.content;
       if (text) {
         answerNode.current.value = answerNode.current.value + text;
-        htmlRenderNode.current.innerHTML = markdownToHtml(answerNode.current.value);
+        htmlRenderNode.current.innerHTML = markdownToHtml(
+          answerNode.current.value
+        );
+        scrollToBottom();
         // if (!isConvertMarkdown) {
         //   setIsConvertMarkdown(true);
         //   setTimeout(() => {
@@ -81,23 +107,20 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
     }
   }
 
-  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!prompt) return;
-
-    setStreaming(true);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (answerNode.current && htmlRenderNode.current) {
       answerNode.current.value = "";
-      htmlRenderNode.current.innerHTML= "";
+      htmlRenderNode.current.innerHTML = "";
       // setMessageStream("");
     }
 
-    const input = prompt.trim();
-    setPrompt("");
+    // const input = prompt.trim();
+    // setPrompt("");
+    setStreaming(true);
+    setValue("prompt", "");
 
     const message: Message = {
-      text: input,
+      text: data.prompt.trim(),
       createdAt: serverTimestamp(),
       user: {
         _id: session?.user?.email!,
@@ -119,7 +142,7 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
       message
     );
     // Toast notification
-    const notification = toast.loading("GPT-chan is thinking...");
+    const notification = toast.loading("GPT-chan is answering...");
 
     const lastMessages = await getDocs(
       query(
@@ -150,39 +173,6 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
         };
       });
 
-    // await fetch("/api/askQuestion", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     prompt: input,
-    //     chatId,
-    //     model,
-    //     session,
-    //     previousRequestMessages,
-    //   }),
-    // }).then(async (res) => {
-    //   const data = await res.json();
-
-    //   await fetch("/api/addMessage", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       data: data,
-    //       chatId,
-    //       session,
-    //     }),
-    //   });
-
-    //   // Toast notification to say successful...
-    //   toast.success("GPT-chan has responded!", {
-    //     id: notification,
-    //   });
-    // });
-
     const ctrl = new AbortController();
     await fetchEventSource("/api/askQuestion", {
       method: "POST",
@@ -190,7 +180,7 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prompt: input,
+        prompt: data.prompt.trim(),
         chatId,
         model,
         session,
@@ -202,7 +192,7 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
         // answerValue.current = ""
         if (answerNode.current && htmlRenderNode.current) {
           answerNode.current.value = "";
-          htmlRenderNode.current.innerHTML= "";
+          htmlRenderNode.current.innerHTML = "";
           // setMessageStream("");
         }
         console.log("onopen");
@@ -247,8 +237,8 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
           body: JSON.stringify({
             answer: answerNode?.current?.value,
             chatId,
-            session
-          })
+            session,
+          }),
         });
         setStreaming(false);
         toast.success("GPT-chan has finished!", {
@@ -301,36 +291,40 @@ function ChatInput({ chatId, setStreaming, answerNode, htmlRenderNode }: Props) 
 
   return (
     <div className="bg-slate-800 text-gray-400 text-sm focus:outline-none">
-      <form onSubmit={sendMessage} className="p-5 space-x-5 flex">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-x-5 flex">
         <textarea
-          className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300 max-h-52 w-full resize-none overflow-y-auto"
+          className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300 max-h-52 w-full resize-none overflow-y-auto "
           disabled={!session}
-          value={prompt}
+          // value={prompt}
           tabIndex={0}
           rows={1}
-          onChange={(e) => setPrompt(e.target.value)}
+          // onChange={(e) => setPrompt(e.target.value)}
           // type="text"
           placeholder="Type your message here..."
           onKeyUp={(e) => {
-            const textarea = e.target as HTMLTextAreaElement
+            const textarea = e.target as HTMLTextAreaElement;
             if (e.key === "Enter" && !e.shiftKey) {
-              const isEmpty = textarea.value.trim() === ""
+              const isEmpty = textarea.value.trim() === "";
               if (isEmpty) {
-                textarea.value = ""
+                textarea.value = "";
               } else {
-                
+                handleSubmit(onSubmit)();
               }
             } else {
-              textarea.style.height = "auto" // Reset the height to its default to allow it to shrink when deleting text
-              textarea.style.height = `${textarea.scrollHeight}px` // Set the height to the scroll height so that it expands on new lines
+              textarea.style.height = "auto"; // Reset the height to its default to allow it to shrink when deleting text
+              textarea.style.height = `${textarea.scrollHeight}px`; // Set the height to the scroll height so that it expands on new lines
             }
           }}
-        ></textarea>
+          {...register("prompt", {
+            required: true,
+            disabled: isStreaming,
+          })}
+        />
 
         <button
-          disabled={!prompt || !session}
+          disabled={isStreaming || !session}
           type="submit"
-          className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="shrink-0 bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           <PaperAirplaneIcon className="h-4 w-4 -rotate-45 mf-1" />
         </button>

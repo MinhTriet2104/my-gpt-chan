@@ -7,18 +7,21 @@ import {
   query,
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { forwardRef, LegacyRef, useEffect, useRef, RefObject } from "react";
+import { LegacyRef, useEffect, RefObject } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
 import Message from "./Message";
+import Image from 'next/image';
+import GptChanAvatar from "../images/gpt-chan-avatar.png"
 // import MessageBot from "./MessageBot";
-import { markdownToHtml } from "./ShowdownWrapper";
+// import { markdownToHtml } from "./ShowdownWrapper";
 
 type Props = {
   chatId: string;
   isStreaming: Boolean;
   answerNode: RefObject<HTMLTextAreaElement>;
-  htmlRenderNode: RefObject<HTMLParagraphElement>
+  htmlRenderNode: RefObject<HTMLParagraphElement>;
+  messagesEndRef: RefObject<HTMLDivElement>;
   // messageStream: String;
 };
 
@@ -38,15 +41,15 @@ const MessageGptChan = (
         }`}
       >
         <div className="flex space-x-5 px-10 max-w-2xl mx-auto">
-          <img
-            src="https://i.pinimg.com/1200x/06/19/c7/0619c75193b55bec40a1b6161ed1672b.jpg"
-            alt=""
+          <Image
+            src={GptChanAvatar}
+            alt="GPT-chan"
             className="h-9 w-9 rounded-full"
           />
           {/* <article className="prose lg:prose-md prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: messageText }} /> */}
           <article
             ref={refHtml}
-            className={refHtml && !hidden ? `prose lg:prose-md prose-invert` : ""}
+            className={refHtml && !hidden ? `prose lg:prose-md prose-invert after:-mb-1 after:inline-block after:h-5 after:w-2 after:animate-blink after:bg-gray-600 after:content-[''] after:dark:bg-gray-400` : ""}
             // dangerouslySetInnerHTML={{ __html: messageText }}
           />
           <textarea ref={refText} className="hidden"></textarea>
@@ -56,9 +59,9 @@ const MessageGptChan = (
   }
 );
 
-function Chat({ chatId, isStreaming, answerNode, htmlRenderNode }: Props) {
+function Chat({ chatId, isStreaming, answerNode, htmlRenderNode, messagesEndRef }: Props) {
   const { data: session } = useSession();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  // const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages] = useCollection(
     session &&
