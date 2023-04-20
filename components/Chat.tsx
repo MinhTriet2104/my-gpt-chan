@@ -36,7 +36,7 @@ const MessageGptChan = (
 
     return (
       <div
-        className={`${hidden ? "hidden" : "block"} py-5 text-white ${
+        className={`${hidden ? "hidden" : "block"} py-5 text-white border-t borer-b border-gray-700 ${
           isChatGPT && "bg-[#343541]"
         }`}
       >

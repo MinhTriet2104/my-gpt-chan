@@ -14,7 +14,7 @@ function Message({ message }: Props) {
   const messageText = markdownToHtml(message.text);
 
   return (
-    <div className={`py-5 text-white ${isChatGPT && "bg-[#343541]"}`}>
+    <div className={`py-5 text-white ${isChatGPT && "bg-[#343541]"} border-t borer-b border-gray-700`}>
       <div className="flex space-x-5 px-10 max-w-2xl mx-auto">
         {isChatGPT ? (
           <Image className="h-9 w-9 rounded-full" src={GptChanAvatar} alt="GPT-chan" />

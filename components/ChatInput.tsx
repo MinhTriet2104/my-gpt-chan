@@ -241,6 +241,7 @@ function ChatInput({
           }),
         });
         setStreaming(false);
+        setFocus("prompt");
         toast.success("GPT-chan has finished!", {
           id: notification,
         });
@@ -290,7 +291,7 @@ function ChatInput({
   }, [htmlRenderNode.current]);
 
   return (
-    <div className="bg-slate-800 text-gray-400 text-sm focus:outline-none">
+    <div className="bg-slate-900 text-gray-300 text-md focus:outline-none pt-2">
       <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-x-5 flex">
         <textarea
           className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300 max-h-52 w-full resize-none overflow-y-auto "

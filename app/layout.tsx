@@ -24,12 +24,12 @@ export default async function RootLayout({
 					) : (
 						<>
 							<div className="flex md:flex">
-								<div className="bg-slate-800 max-w-xs h-screen md:overflow-y-auto md:min-w-[20rem] lg:max-w-[25rem]">
+								<div className="bg-slate-900 max-w-xs h-screen md:overflow-y-auto md:min-w-[15rem] lg:max-w-[20rem]">
 									<SideBar />
 								</div>
 
 								<ClientProvider />
-								<div className="bg-slate-700 flex-1">
+								<div className="bg-zinc-800 flex-1">
 									{children}
 								</div>
 							</div>

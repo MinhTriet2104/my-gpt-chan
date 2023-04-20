@@ -45,8 +45,10 @@ function SideBar() {
 				</div>
 			</div>
 
+			<hr className="border-gray-700" />
+
 			{session && (
-				<div className="flex justify-between items-center cursor-pointer text-gray-300 transition-all duration-200 ease-out rounded-lg px-2">
+				<div className="flex justify-between items-center cursor-pointer text-gray-300 transition-all duration-200 ease-out rounded-lg px-2 py-2 pt-4">
 					<div className="flex items-center space-x-3">
 						<img
 							src={session.user?.image!}
