@@ -155,7 +155,7 @@ function ChatInput({
           "messages"
         ),
         orderBy("createdAt", "desc"),
-        limit(7)
+        limit(9)
       )
     );
 
