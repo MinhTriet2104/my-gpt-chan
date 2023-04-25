@@ -29,7 +29,7 @@ export default async function RootLayout({
 								</div>
 
 								<ClientProvider />
-								<div className="bg-zinc-800 flex-1">
+								<div className="bg-zinc-900 flex-1">
 									{children}
 								</div>
 							</div>
