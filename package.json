@@ -12,6 +12,7 @@
     "@types/showdown": "^2.0.0",
     "firebase": "^9.17.2",
     "firebase-admin": "^11.5.0",
+    "highlight.js": "^11.7.0",
     "next": "latest",
     "next-auth": "^4.20.1",
     "openai": "^3.2.1",
@@ -23,6 +24,7 @@
     "react-hot-toast": "^2.4.0",
     "react-select": "^5.7.0",
     "showdown": "^2.1.0",
+    "showdown-highlight": "^3.1.0",
     "swr": "^2.1.0"
   },
   "devDependencies": {
