@@ -11,3 +11,11 @@
 		@apply rounded-lg px-5 py-3 text-sm flex items-center justify-center space-x-2 hover:bg-gray-700/70 cursor-pointer text-gray-300 transition-all duration-200 ease-out;
 	}
 }
+
+.prose :where(pre):not(:where([class~="not-prose"] *)) {
+	padding: 0;
+}
+
+.prose :where(pre code):not(:where([class~="not-prose"] *)) {
+	background-color: #282936;
+}
